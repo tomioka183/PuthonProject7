@@ -26,3 +26,5 @@ class Category:
         # Автоматическое обновление счетчиков при создании категории
         Category.category_count += 1
         Category.product_count += len(products)
+
+
