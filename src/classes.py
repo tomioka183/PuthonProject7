@@ -1,10 +1,8 @@
 class Product:
-    """Класс для представления товара."""
-
     def __init__(self, name: str, description: str, price: float, quantity: int):
         self.name = name
         self.description = description
-        self.__price = price
+        self.__price = price  # Приватный атрибут цены
         self.quantity = quantity
 
     @classmethod
@@ -23,7 +21,7 @@ class Product:
         return self.__price
 
     @price.setter
-    def price(self, new_price):
+    def price(self, new_price: float):
         """Сеттер для цены с проверкой (Задание 4)."""
         if new_price <= 0:
             print("Цена не должна быть нулевая или отрицательная")
@@ -32,29 +30,30 @@ class Product:
 
 
 class Category:
-    """Класс для представления категории товаров."""
     category_count = 0
     product_count = 0
 
     def __init__(self, name: str, description: str, products=None):
         self.name = name
         self.description = description
-        self.__products = []
-        Category.category_count += 1
+        # Задание 1: приватный список товаров
+        self.__products = products if products is not None else []
 
-        if products:
-            for product in products:
-                self.add_product(product)
+        # Подсчет количества категорий и уникальных товаров
+        Category.category_count += 1
+        Category.product_count += len(self.__products)
 
     def add_product(self, product: Product):
-        """Метод для добавления товара в приватный список (Задание 1)."""
+        """Добавляет продукт в категорию (Задание 1)."""
         self.__products.append(product)
         Category.product_count += 1
 
     @property
     def products(self):
-        """Геттер для вывода списка товаров в нужном формате (Задание 2)."""
-        products_str = ""
+        """Геттер для вывода товаров в формате строки (Задание 2)."""
+        result = ""
         for product in self.__products:
-            products_str += f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.\n"
-        return products_str
+            result += f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.\n"
+
+        return result.strip()
+

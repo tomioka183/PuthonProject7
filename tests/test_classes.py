@@ -12,7 +12,7 @@ def test_category_products_str():
     prod = Product("Samsung", "Smartphone", 1000.0, 10)
     cat = Category("Electronics", "Gadgets")
     cat.add_product(prod)
-    assert cat.products == "Samsung, 1000.0 руб. Остаток: 10 шт.\n"
+    assert cat.products == "Samsung, 1000.0 руб. Остаток: 10 шт."
 
 def test_new_product_classmethod():
     data = {"name": "Nokia", "description": "Old", "price": 500.0, "quantity": 1}
