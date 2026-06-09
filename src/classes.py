@@ -2,12 +2,12 @@ class Product:
     def __init__(self, name: str, description: str, price: float, quantity: int):
         self.name = name
         self.description = description
-        self.__price = price  # Приватный атрибут цены
+        self.__price = price
         self.quantity = quantity
 
     @classmethod
     def new_product(cls, product_data: dict):
-        """Создает товар из словаря (Задание 3)."""
+        """Создает товар из словаря."""
         return cls(
             name=product_data.get("name"),
             description=product_data.get("description"),
@@ -17,16 +17,22 @@ class Product:
 
     @property
     def price(self):
-        """Геттер для цены (Задание 4)."""
+        """Геттер для цены."""
         return self.__price
 
     @price.setter
     def price(self, new_price: float):
-        """Сеттер для цены с проверкой (Задание 4)."""
+        """Сеттер для цены с проверкой."""
         if new_price <= 0:
             print("Цена не должна быть нулевая или отрицательная")
         else:
             self.__price = new_price
+
+    def __str__(self):
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        return (self.price * self.quantity) + (other.price * other.quantity)
 
 
 class Category:
@@ -36,24 +42,26 @@ class Category:
     def __init__(self, name: str, description: str, products=None):
         self.name = name
         self.description = description
-        # Задание 1: приватный список товаров
+        # Приватный список товаров
         self.__products = products if products is not None else []
 
-        # Подсчет количества категорий и уникальных товаров
         Category.category_count += 1
         Category.product_count += len(self.__products)
 
     def add_product(self, product: Product):
-        """Добавляет продукт в категорию (Задание 1)."""
+        """Добавляет продукт в категорию."""
         self.__products.append(product)
         Category.product_count += 1
 
     @property
     def products(self):
-        """Геттер для вывода товаров в формате строки (Задание 2)."""
+        """Оптимизированный геттер с использованием str(product)"""
         result = ""
         for product in self.__products:
-            result += f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.\n"
-
+            result += f"{str(product)}\n"
         return result.strip()
+
+    def __str__(self):
+        total_quantity = sum(product.quantity for product in self.__products)
+        return f"{self.name}, количество продуктов: {total_quantity} шт."
 
