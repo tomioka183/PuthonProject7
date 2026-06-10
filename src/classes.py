@@ -2,7 +2,7 @@ class Product:
     def __init__(self, name: str, description: str, price: float, quantity: int):
         self.name = name
         self.description = description
-        self.__price = price
+        self.__price = price  # Приватный атрибут цены
         self.quantity = quantity
 
     @classmethod
@@ -32,7 +32,28 @@ class Product:
         return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
 
     def __add__(self, other):
+        if type(self) is not type(other):
+            raise TypeError("Складывать можно только товары одного класса!")
         return (self.price * self.quantity) + (other.price * other.quantity)
+
+
+class Smartphone(Product):
+    def __init__(self, name: str, description: str, price: float, quantity: int,
+                 efficiency: float, model: str, memory: int, color: str):
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+
+class LawnGrass(Product):
+    def __init__(self, name: str, description: str, price: float, quantity: int,
+                 country: str, germination_period: str, color: str):
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
 
 
 class Category:
@@ -42,20 +63,24 @@ class Category:
     def __init__(self, name: str, description: str, products=None):
         self.name = name
         self.description = description
-        # Приватный список товаров
-        self.__products = products if products is not None else []
+        self.__products = []
 
         Category.category_count += 1
-        Category.product_count += len(self.__products)
 
-    def add_product(self, product: Product):
-        """Добавляет продукт в категорию."""
+        if products is not None:
+            for product in products:
+                self.add_product(product)
+
+    def add_product(self, product):
+        if not isinstance(product, Product):
+            raise TypeError("Добавлять в категорию можно только продукты или их наследников!")
+
         self.__products.append(product)
         Category.product_count += 1
 
     @property
     def products(self):
-        """Оптимизированный геттер с использованием str(product)"""
+        """Геттер для списка товаров."""
         result = ""
         for product in self.__products:
             result += f"{str(product)}\n"
@@ -64,4 +89,3 @@ class Category:
     def __str__(self):
         total_quantity = sum(product.quantity for product in self.__products)
         return f"{self.name}, количество продуктов: {total_quantity} шт."
-
