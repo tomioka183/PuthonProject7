@@ -1,13 +1,34 @@
-class Product:
+from abc import ABC, abstractmethod
+
+class BaseProduct(ABC):
+    @classmethod
+    @abstractmethod
+    def new_product(cls, product_data: dict):
+        pass
+
+class PrintMixin:
+    def __init__(self):
+        print(repr(self))
+
+    def __repr__(self):
+        args = []
+        for key, value in self.__dict__.items():
+            if isinstance(value, str):
+                args.append(f"'{value}'")
+            else:
+                args.append(str(value))
+        return f"{self.__class__.__name__}({', '.join(args)})"
+
+class Product(PrintMixin, BaseProduct):
     def __init__(self, name: str, description: str, price: float, quantity: int):
         self.name = name
         self.description = description
-        self.__price = price  # Приватный атрибут цены
+        self.__price = price
         self.quantity = quantity
+        super().__init__()
 
     @classmethod
     def new_product(cls, product_data: dict):
-        """Создает товар из словаря."""
         return cls(
             name=product_data.get("name"),
             description=product_data.get("description"),
@@ -17,12 +38,10 @@ class Product:
 
     @property
     def price(self):
-        """Геттер для цены."""
         return self.__price
 
     @price.setter
     def price(self, new_price: float):
-        """Сеттер для цены с проверкой."""
         if new_price <= 0:
             print("Цена не должна быть нулевая или отрицательная")
         else:
@@ -36,25 +55,22 @@ class Product:
             raise TypeError("Складывать можно только товары одного класса!")
         return (self.price * self.quantity) + (other.price * other.quantity)
 
-
 class Smartphone(Product):
     def __init__(self, name: str, description: str, price: float, quantity: int,
                  efficiency: float, model: str, memory: int, color: str):
-        super().__init__(name, description, price, quantity)
         self.efficiency = efficiency
         self.model = model
         self.memory = memory
         self.color = color
-
+        super().__init__(name, description, price, quantity)
 
 class LawnGrass(Product):
     def __init__(self, name: str, description: str, price: float, quantity: int,
                  country: str, germination_period: str, color: str):
-        super().__init__(name, description, price, quantity)
         self.country = country
         self.germination_period = germination_period
         self.color = color
-
+        super().__init__(name, description, price, quantity)
 
 class Category:
     category_count = 0
@@ -64,9 +80,7 @@ class Category:
         self.name = name
         self.description = description
         self.__products = []
-
         Category.category_count += 1
-
         if products is not None:
             for product in products:
                 self.add_product(product)
@@ -74,13 +88,11 @@ class Category:
     def add_product(self, product):
         if not isinstance(product, Product):
             raise TypeError("Добавлять в категорию можно только продукты или их наследников!")
-
         self.__products.append(product)
         Category.product_count += 1
 
     @property
     def products(self):
-        """Геттер для списка товаров."""
         result = ""
         for product in self.__products:
             result += f"{str(product)}\n"
